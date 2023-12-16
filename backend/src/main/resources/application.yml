@@ -1,0 +1,24 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/backend
+    username: developer
+    password: developer
+
+  flyway:
+    out-of-order: true
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 10
+        order_inserts: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
