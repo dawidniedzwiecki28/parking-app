@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,11 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "84d5d51368ba70d7e83db84fd27e54d6821364e8133b24887976ac69821a646f";
+    @Value("${parking.config.jwt.durationMilis}")
+    private long jwtDurationMmilis;
+
+    @Value("${parking.config.jwt.secretKey}")
+    private String SECRET_KEY;
 
     public String extractUsername(String jwt) {
         return extractClaim(jwt, Claims::getSubject);
@@ -30,7 +35,7 @@ public class JwtService {
                 .builder()
                 .subject(details.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + jwtDurationMmilis))
                 .signWith(getSigningKey())
                 .compact();
     }

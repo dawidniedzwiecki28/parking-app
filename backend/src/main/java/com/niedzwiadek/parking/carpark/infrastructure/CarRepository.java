@@ -12,4 +12,5 @@ public interface CarRepository extends JpaRepository<CarEntity, UUID> {
     Optional<CarEntity> findByRegistrationNumberIgnoreCase(String number);
     List<CarEntity> findAllByAccountIdAndOnParkingTrue(UUID accountId);
     void deleteByRegistrationNumberIgnoreCase(String number);
+    void deleteAllByAccountId(UUID accountId);
 }

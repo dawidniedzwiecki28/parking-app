@@ -1,0 +1,32 @@
+
+/* Styling for login modal */
+.ReactModal__Overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ReactModal__Overlay--after-open {
+    opacity: 1;
+  }
+  
+  .ReactModal__Overlay--before-close {
+    opacity: 0;
+  }
+  
+  form {
+    max-width: 300px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+  }
+  
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .ReactModal__Content {
+      max-width: 80%;
+    }
+  }
+  

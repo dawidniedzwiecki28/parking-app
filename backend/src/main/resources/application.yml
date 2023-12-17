@@ -13,7 +13,6 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         jdbc:
           batch_size: 10
@@ -22,3 +21,8 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+parking:
+  config:
+    jwt:
+      durationMilis: 5000000
+      secretKey: "84d5d51368ba70d7e83db84fd27e54d6821364e8133b24887976ac69821a646f"

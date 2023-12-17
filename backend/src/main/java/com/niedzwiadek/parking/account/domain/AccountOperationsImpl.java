@@ -1,9 +1,12 @@
 package com.niedzwiadek.parking.account.domain;
 
+import com.niedzwiadek.parking.account.api.AccountAlreadyExistException;
 import com.niedzwiadek.parking.account.api.AccountId;
+import com.niedzwiadek.parking.account.api.AccountNotFoundException;
 import com.niedzwiadek.parking.account.api.AccountOperations;
 import com.niedzwiadek.parking.account.infrastructure.AccountEntity;
 import com.niedzwiadek.parking.account.infrastructure.AccountRepository;
+import com.niedzwiadek.parking.carpark.api.CarOperations;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -20,12 +23,13 @@ import java.util.UUID;
 class AccountOperationsImpl implements AccountOperations {
 
     private static final Logger log = LoggerFactory.getLogger(AccountOperationsImpl.class);
+    private final CarOperations carOperations;
     private final AccountRepository accountRepository;
 
     @Override
     @Transactional
     public UserDetails save(@NonNull String name, @NonNull String email, @NonNull String password) {
-        final var user = AccountEntity.builder()
+        final var account = AccountEntity.builder()
                 .createdAt(Instant.now())
                 .email(email)
                 .name(name)
@@ -33,10 +37,16 @@ class AccountOperationsImpl implements AccountOperations {
                 .role(AccountEntity.Role.ADMIN)
                 .password(password)
                 .build();
-        log.info("Saving user {}", user);
-        accountRepository.saveAndFlush(user);
-        log.info("User saved {}", user.getId());
-        return user;
+        try {
+            log.info("Saving account {}", account);
+            accountRepository.saveAndFlush(account);
+            log.info("User saved {}", account.getId());
+        } catch (Exception e) {
+            if (e.getMessage().contains("accounts_email_key")) {
+                throw new AccountAlreadyExistException(email);
+            }
+        }
+        return account;
     }
 
     @Override
@@ -50,7 +60,7 @@ class AccountOperationsImpl implements AccountOperations {
     public void rename(@NonNull AccountId accountId, @NonNull String newName) {
         log.info("Renaming user with accountId: {} to: {}", accountId, newName);
         var entity = accountRepository.findById(accountId.value())
-                .orElseThrow();
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
         entity.setName(newName);
         accountRepository.saveAndFlush(entity);
         log.info("Renamed user with accountId: {}", accountId);
@@ -60,6 +70,7 @@ class AccountOperationsImpl implements AccountOperations {
     @Transactional
     public void delete(@NonNull AccountId accountId) {
         log.info("Deleting user with accountId: {}", accountId);
+        carOperations.deleteCarsFor(accountId);
         accountRepository.deleteById(accountId.value());
         log.info("Deleted user with accountId: {}", accountId);
     }
