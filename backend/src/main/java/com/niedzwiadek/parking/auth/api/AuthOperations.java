@@ -9,7 +9,7 @@ public interface AuthOperations {
 
 
     record RegisterRequest(
-            @NonNull String firstName,
+            @NonNull String name,
             @NonNull String email,
             @NonNull String password) {
     }

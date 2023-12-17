@@ -23,7 +23,7 @@ class AuthOperationsImpl implements AuthOperations {
     @Override
     @Transactional
     public AuthenticationResponse register(@NonNull RegisterRequest request) {
-        final var userDetails = accountOperations.save(request.firstName(), request.email(), passwordEncoder.encode(request.password()));
+        final var userDetails = accountOperations.save(request.name(), request.email(), passwordEncoder.encode(request.password()));
         final var jwtToken = jwtService.generateToken(userDetails);
         return new AuthenticationResponse(jwtToken);
     }

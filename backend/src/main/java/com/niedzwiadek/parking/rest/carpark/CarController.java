@@ -1,5 +1,6 @@
 package com.niedzwiadek.parking.rest.carpark;
 
+import com.niedzwiadek.parking.account.api.AccountId;
 import com.niedzwiadek.parking.account.api.AccountOperations;
 import com.niedzwiadek.parking.carpark.api.CarId;
 import com.niedzwiadek.parking.carpark.api.CarOperations;
@@ -32,15 +33,26 @@ public class CarController {
     private final CarOperations carOperations;
     private final AccountOperations accountOperations;
 
-    @GetMapping("/cars")
-    List<CarOperations.CarData> listCarsOnParking(final Principal principal) {
+    @GetMapping("/cars/{term}")
+    List<CarDataResponseDto> searchCarsOnParking(final Principal principal, @PathVariable final String term) {
         final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
-        return carOperations.listCarsOnParking(accountId);
+        return carOperations.listCarsOnParking(accountId, term).stream()
+                .map(this::fromCarData)
+                .toList();
+    }
+
+    @GetMapping("/cars")
+    List<CarDataResponseDto> listAllCarsOnParking(final Principal principal) {
+        final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
+        return carOperations.listCarsOnParking(accountId, null).stream()
+                .map(this::fromCarData)
+                .toList();
     }
 
     @GetMapping("/car/{number}")
-    CarOperations.CarData find(@PathVariable String number) {
-        return carOperations.find(number);
+    Optional<CarDataResponseDto> find(@PathVariable String number) {
+        final var car = carOperations.find(number);
+        return car.map(this::fromCarData);
     }
 
     @GetMapping("/black-car/{number}")
@@ -57,39 +69,67 @@ public class CarController {
     void create(final Principal principal, @RequestBody CarCreateDto sourceCar) {
         log.info("Received request to create car: {}", sourceCar);
         final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
-        carOperations.create(
-                CarOperations.CarCreate.builder()
-                        .accountId(accountId)
-                        .registrationNumber(sourceCar.getRegistrationNumber())
-                        .arrivalDate(sourceCar.getArrivalDate() != null ? sourceCar.getArrivalDate() : LocalDateTime.now())
-                        .departureDate(sourceCar.getDepartureDate())
-                        .country(sourceCar.getCountry())
-                        .paid(sourceCar.isPaid())
-                        .onParking(sourceCar.isOnParking())
-                        .build()
-        );
+        carOperations.create(fromCarCreateDto(sourceCar, accountId));
     }
 
     @PatchMapping("/car/{carId}")
-    void update(@PathVariable String carId, @RequestBody CarUpdateDto sourceCar) {
+    void update(@PathVariable final String carId, @RequestBody final CarUpdateDto sourceCar) {
         log.info("Received request to update car: {}", sourceCar);
-        carOperations.update(
-                CarOperations.CarUpdate.builder()
-                        .carId(CarId.fromString(carId))
-                        .registrationNumber(Optional.ofNullable(sourceCar.getRegistrationNumber()))
-                        .arrivalDate(Optional.ofNullable(sourceCar.getArrivalDate()))
-                        .departureDate(Optional.ofNullable(sourceCar.getDepartureDate()))
-                        .country(Optional.ofNullable(sourceCar.getCountry()))
-                        .onParking(Optional.of(sourceCar.isOnParking()))
-                        .paid(Optional.of(sourceCar.isPaid()))
-                        .build()
-        );
+        carOperations.update(fromCarUpdateDto(sourceCar, CarId.fromString(carId)));
+    }
+
+    private CarDataResponseDto fromCarData(final CarOperations.CarData sourceCar) {
+        return CarDataResponseDto.builder()
+                .carId(sourceCar.getCarId().serialize())
+                .accountId(sourceCar.getAccountId().serialize())
+                .registrationNumber(sourceCar.getRegistrationNumber())
+                .arrivalDate(sourceCar.getArrivalDate())
+                .departureDate(sourceCar.getDepartureDate())
+                .country(sourceCar.getCountry())
+                .paid(sourceCar.isPaid())
+                .onParking(sourceCar.isOnParking())
+                .build();
+    }
+
+    private CarOperations.CarUpdate fromCarUpdateDto(final CarUpdateDto sourceCar, final CarId carId) {
+        return CarOperations.CarUpdate.builder()
+                .carId(carId)
+                .registrationNumber(Optional.ofNullable(sourceCar.getRegistrationNumber()))
+                .arrivalDate(Optional.ofNullable(sourceCar.getArrivalDate()))
+                .departureDate(Optional.ofNullable(sourceCar.getDepartureDate()))
+                .country(Optional.ofNullable(sourceCar.getCountry()))
+                .onParking(Optional.ofNullable(sourceCar.getOnParking()))
+                .paid(Optional.ofNullable(sourceCar.getPaid()))
+                .build();
+    }
+
+    private CarOperations.CarCreate fromCarCreateDto(final CarCreateDto sourceCar, final AccountId accountId) {
+        return CarOperations.CarCreate.builder()
+                .accountId(accountId)
+                .registrationNumber(sourceCar.getRegistrationNumber())
+                .arrivalDate(sourceCar.getArrivalDate())
+                .departureDate(sourceCar.getDepartureDate())
+                .country(sourceCar.getCountry())
+                .paid(sourceCar.isPaid())
+                .build();
     }
 
     @Value
     @Builder
     static class CarCreateDto {
         @NonNull
+        String registrationNumber;
+        String country;
+        LocalDateTime arrivalDate;
+        LocalDateTime departureDate;
+        boolean paid;
+    }
+
+    @Value
+    @Builder
+    static class CarDataResponseDto {
+        String accountId;
+        String carId;
         String registrationNumber;
         String country;
         LocalDateTime arrivalDate;
@@ -105,7 +145,7 @@ public class CarController {
         String country;
         LocalDateTime arrivalDate;
         LocalDateTime departureDate;
-        boolean paid;
-        boolean onParking;
+        Boolean paid;
+        Boolean onParking;
     }
 }

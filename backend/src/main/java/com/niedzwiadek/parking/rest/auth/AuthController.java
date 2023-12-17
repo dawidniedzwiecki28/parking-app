@@ -21,12 +21,18 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthOperations.AuthenticationResponse> register(@RequestBody AuthOperations.RegisterRequest request) {
         log.info("Received request to register user with email {}", request.email());
+        if (request.email().isBlank() || request.password().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(authOperations.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthOperations.AuthenticationResponse> login(@RequestBody AuthOperations.AuthenticationRequest request) {
         log.info("Received request to login user with email {}", request.email());
+        if (request.email().isBlank() || request.password().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(authOperations.login(request));
     }
 }

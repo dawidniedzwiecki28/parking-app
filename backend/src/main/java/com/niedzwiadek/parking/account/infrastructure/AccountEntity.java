@@ -1,5 +1,6 @@
 package com.niedzwiadek.parking.account.infrastructure;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -28,6 +29,7 @@ public class AccountEntity implements UserDetails {
     @Id
     private UUID id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
     private Instant createdAt;

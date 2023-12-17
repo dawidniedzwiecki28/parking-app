@@ -19,16 +19,19 @@ public interface CarOperations {
     void create(CarCreate sourceCar);
 
     @Transactional(readOnly = true)
-    List<CarData> listCarsOnParking(@NonNull AccountId accountId);
+    List<CarData> listCarsOnParking(@NonNull AccountId accountId, String term);
 
     @Transactional(readOnly = true)
-    CarData find(@NonNull String registrationNumber);
+    Optional<CarData> find(@NonNull String registrationNumber);
 
     @Transactional
     void addToBlackList(@NonNull CarId carId);
 
     @Transactional(readOnly = true)
     boolean checkIfBlacklisted(@NonNull String registrationNumber);
+
+    @Transactional
+    void deleteCarsFor(@NonNull AccountId accountId);
 
     @Value
     @Builder
@@ -54,8 +57,6 @@ public interface CarOperations {
         LocalDateTime departureDate;
         LocalDateTime arrivalDate;
         Boolean paid;
-        @Builder.Default
-        boolean onParking = true;
     }
 
     @Value
