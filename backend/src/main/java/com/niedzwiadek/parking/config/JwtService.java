@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class JwtService {
 
     @Value("${parking.config.jwt.durationMilis}")
-    private long jwtDurationMmilis;
+    private long jwtDurationMilis;
 
     @Value("${parking.config.jwt.secretKey}")
     private String SECRET_KEY;
@@ -35,7 +35,7 @@ public class JwtService {
                 .builder()
                 .subject(details.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtDurationMmilis))
+                .expiration(new Date(System.currentTimeMillis() + jwtDurationMilis))
                 .signWith(getSigningKey())
                 .compact();
     }

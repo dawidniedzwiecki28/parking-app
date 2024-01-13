@@ -39,6 +39,7 @@ const AccountDetailsModal = ({ setShowAccountDetailsModal }) => {
           },
         });
 
+        
         setShowAccountDetailsModal(false);
 
       }

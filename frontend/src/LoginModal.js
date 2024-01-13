@@ -23,10 +23,10 @@ const LoginModal = ({ isOpen, closeModal }) => {
 
       const token = response.data.token;
       if (token) {
-        localStorage.setItem('token', token); // Store the token in localStorage
+        localStorage.setItem('token', token); 
       }
 
-      console.log(response.data); // Log the response data
+      console.log(response.data); 
 
       closeModal(); // Close the modal after successful login
       window.location.href = '/cars';
