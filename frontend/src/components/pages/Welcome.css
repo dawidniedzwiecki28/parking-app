@@ -1,0 +1,40 @@
+  .container {
+    color: white; 
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+  }
+  
+  .container h1 {
+    margin-bottom: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fefefe;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #333;
+    color: #fff;
+  }
+
+  body {
+    background-image: url("../../images/background1.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  

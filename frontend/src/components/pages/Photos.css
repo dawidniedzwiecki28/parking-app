@@ -1,0 +1,24 @@
+  .gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .gallery-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .gallery-image:hover {
+    transform: scale(1.1);
+  }
+
+  body {
+    background-image: url("../../images/background1.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
