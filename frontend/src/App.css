@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.welcome-container {
+  display: flex;
+  align-content: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cars-list-container {
+  background-image: url("./images/background2.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.photos-container {
+  background-image: url("./images/background1.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
