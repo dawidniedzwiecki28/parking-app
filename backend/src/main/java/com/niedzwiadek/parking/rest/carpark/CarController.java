@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -53,16 +52,6 @@ public class CarController {
     Optional<CarDataResponseDto> find(@PathVariable String number) {
         final var car = carOperations.find(number);
         return car.map(this::fromCarData);
-    }
-
-    @GetMapping("/black-car/{number}")
-    Boolean showBlackListNotify(@PathVariable String number) {
-        return carOperations.checkIfBlacklisted(number);
-    }
-
-    @PostMapping("/black-car/{carId}")
-    void addToBlackLIst(@RequestParam String carId) {
-        carOperations.addToBlackList(CarId.ofNullable(carId));
     }
 
     @PostMapping("/car")
