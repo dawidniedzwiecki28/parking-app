@@ -18,8 +18,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "black_list_cars")
 public class BlacklistCarEntity {
-    @Id
-    private UUID carId;
-    private String registrationNumber;
-    private LocalDateTime ranAwayAt;
+  @Id
+  private UUID carId;
+  private String registrationNumber;
+  private LocalDateTime ranAwayAt;
 }

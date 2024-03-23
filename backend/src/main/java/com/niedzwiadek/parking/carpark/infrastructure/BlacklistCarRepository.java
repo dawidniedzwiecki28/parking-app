@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BlacklistCarRepository extends JpaRepository<BlacklistCarEntity, UUID> {
-    Optional<BlacklistCarEntity> findByRegistrationNumberIgnoreCase(String number);
-    void deleteByRegistrationNumberIgnoreCase(String number);
+  Optional<BlacklistCarEntity> findByRegistrationNumberIgnoreCase(String number);
+
+  void deleteByRegistrationNumberIgnoreCase(String number);
 }
