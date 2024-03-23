@@ -1,5 +1,6 @@
 package com.niedzwiadek.parking.carpark.infrastructure;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -19,16 +20,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "cars")
 public class CarEntity {
-    @Id
-    private UUID carId;
-    @NonNull
-    private String registrationNumber;
-    @NonNull
-    private UUID accountId;
-    private String country;
-    private boolean paid;
-    @NonNull
-    private LocalDateTime arrivalDate;
-    private LocalDateTime departureDate;
-    private boolean onParking;
+  @Id
+  private UUID carId;
+  @NonNull
+  @Column(unique = true)
+  private String registrationNumber;
+  @NonNull
+  private UUID accountId;
+  private String country;
+  private boolean paid;
+  @NonNull
+  private LocalDateTime arrivalDate;
+  private LocalDateTime departureDate;
+  private boolean onParking;
 }

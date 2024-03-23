@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,47 +27,51 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "accounts")
 public class AccountEntity implements UserDetails {
-    @Id
-    private UUID id;
-    private String name;
-    @Column(unique = true)
-    private String email;
-    private String password;
-    private Instant createdAt;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+  @Id
+  private UUID id;
+  private String name;
+  @NonNull
+  @Column(unique = true)
+  private String email;
+  @NonNull
+  private String password;
+  @NonNull
+  private Instant createdAt;
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority(role.name()));
+  }
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+  @Override
+  public String getUsername() {
+    return email;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 
-    public enum Role {
-        ADMIN
-    }
+  public enum Role {
+    ADMIN
+  }
 }

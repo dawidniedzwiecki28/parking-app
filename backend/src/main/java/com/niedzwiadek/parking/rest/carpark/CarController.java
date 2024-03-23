@@ -7,7 +7,6 @@ import com.niedzwiadek.parking.carpark.api.CarOperations;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,113 +27,116 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CarController {
 
-    private static final Logger log = LoggerFactory.getLogger(CarController.class);
-    private final CarOperations carOperations;
-    private final AccountOperations accountOperations;
+  private static final Logger log = LoggerFactory.getLogger(CarController.class);
+  private final CarOperations carOperations;
+  private final AccountOperations accountOperations;
 
-    @GetMapping("/cars/{term}")
-    List<CarDataResponseDto> searchCarsOnParking(final Principal principal, @PathVariable final String term) {
-        final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
-        return carOperations.listCarsOnParking(accountId, term).stream()
-                .map(this::fromCarData)
-                .toList();
-    }
+  @GetMapping("/cars/{term}")
+  List<CarDataResponseDto> searchCarsOnParking(final Principal principal, @PathVariable final String term) {
+    final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
+    return carOperations.listCarsOnParking(accountId, term).stream()
+        .map(this::fromCarData)
+        .toList();
+  }
 
-    @GetMapping("/cars")
-    List<CarDataResponseDto> listAllCarsOnParking(final Principal principal) {
-        final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
-        return carOperations.listCarsOnParking(accountId, null).stream()
-                .map(this::fromCarData)
-                .toList();
-    }
+  @GetMapping("/cars")
+  List<CarDataResponseDto> listAllCarsOnParking(final Principal principal) {
+    final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
+    return carOperations.listCarsOnParking(accountId, null).stream()
+        .map(this::fromCarData)
+        .toList();
+  }
 
-    @GetMapping("/car/{number}")
-    Optional<CarDataResponseDto> find(@PathVariable String number) {
-        final var car = carOperations.find(number);
-        return car.map(this::fromCarData);
-    }
+  @GetMapping("/car/{number}")
+  Optional<CarDataResponseDto> find(@PathVariable @NonNull final String number) {
+    final var car = carOperations.find(number);
+    return car.map(this::fromCarData);
+  }
 
-    @PostMapping("/car")
-    void create(final Principal principal, @RequestBody CarCreateDto sourceCar) {
-        log.info("Received request to create car: {}", sourceCar);
-        final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
-        carOperations.create(fromCarCreateDto(sourceCar, accountId));
-    }
+  @PostMapping("/car")
+  void create(final Principal principal, @RequestBody @NonNull final CarCreateDto sourceCar) {
+    log.info("Received request to create car: {}", sourceCar);
+    final var accountId = accountOperations.findAccountIdByEmail(principal.getName());
+    carOperations.create(fromCarCreateDto(sourceCar, accountId));
+  }
 
-    @PatchMapping("/car/{carId}")
-    void update(@PathVariable final String carId, @RequestBody final CarUpdateDto sourceCar) {
-        log.info("Received request to update car: {}", sourceCar);
-        carOperations.update(fromCarUpdateDto(sourceCar, CarId.fromString(carId)));
-    }
+  @PatchMapping("/car/{carId}")
+  void update(@PathVariable @NonNull final String carId,
+              @RequestBody @NonNull final CarUpdateDto sourceCar) {
+    log.info("Received request to update car: {}", sourceCar);
+    carOperations.update(fromCarUpdateDto(sourceCar, CarId.fromString(carId)));
+  }
 
-    private CarDataResponseDto fromCarData(final CarOperations.CarData sourceCar) {
-        return CarDataResponseDto.builder()
-                .carId(sourceCar.getCarId().serialize())
-                .accountId(sourceCar.getAccountId().serialize())
-                .registrationNumber(sourceCar.getRegistrationNumber())
-                .arrivalDate(sourceCar.getArrivalDate())
-                .departureDate(sourceCar.getDepartureDate())
-                .country(sourceCar.getCountry())
-                .paid(sourceCar.isPaid())
-                .onParking(sourceCar.isOnParking())
-                .build();
-    }
+  private CarDataResponseDto fromCarData(final CarOperations.CarData sourceCar) {
+    return CarDataResponseDto.builder()
+        .carId(sourceCar.carId().serialize())
+        .accountId(sourceCar.accountId().serialize())
+        .registrationNumber(sourceCar.registrationNumber())
+        .arrivalDate(sourceCar.arrivalDate())
+        .departureDate(sourceCar.departureDate())
+        .country(sourceCar.country())
+        .paid(sourceCar.paid())
+        .onParking(sourceCar.onParking())
+        .build();
+  }
 
-    private CarOperations.CarUpdate fromCarUpdateDto(final CarUpdateDto sourceCar, final CarId carId) {
-        return CarOperations.CarUpdate.builder()
-                .carId(carId)
-                .registrationNumber(Optional.ofNullable(sourceCar.getRegistrationNumber()))
-                .arrivalDate(Optional.ofNullable(sourceCar.getArrivalDate()))
-                .departureDate(Optional.ofNullable(sourceCar.getDepartureDate()))
-                .country(Optional.ofNullable(sourceCar.getCountry()))
-                .onParking(Optional.ofNullable(sourceCar.getOnParking()))
-                .paid(Optional.ofNullable(sourceCar.getPaid()))
-                .build();
-    }
+  private CarOperations.CarUpdate fromCarUpdateDto(final CarUpdateDto sourceCar, final CarId carId) {
+    return CarOperations.CarUpdate.builder()
+        .carId(carId)
+        .registrationNumber(Optional.ofNullable(sourceCar.registrationNumber()))
+        .arrivalDate(Optional.ofNullable(sourceCar.arrivalDate()))
+        .departureDate(Optional.ofNullable(sourceCar.departureDate()))
+        .country(Optional.ofNullable(sourceCar.country()))
+        .onParking(Optional.ofNullable(sourceCar.onParking()))
+        .paid(Optional.ofNullable(sourceCar.paid()))
+        .build();
+  }
 
-    private CarOperations.CarCreate fromCarCreateDto(final CarCreateDto sourceCar, final AccountId accountId) {
-        return CarOperations.CarCreate.builder()
-                .accountId(accountId)
-                .registrationNumber(sourceCar.getRegistrationNumber())
-                .arrivalDate(sourceCar.getArrivalDate())
-                .departureDate(sourceCar.getDepartureDate())
-                .country(sourceCar.getCountry())
-                .paid(sourceCar.isPaid())
-                .build();
-    }
+  private CarOperations.CarCreate fromCarCreateDto(final CarCreateDto sourceCar, final AccountId accountId) {
+    return CarOperations.CarCreate.builder()
+        .accountId(accountId)
+        .registrationNumber(sourceCar.registrationNumber())
+        .arrivalDate(sourceCar.arrivalDate())
+        .departureDate(sourceCar.departureDate())
+        .country(sourceCar.country())
+        .paid(sourceCar.paid())
+        .build();
+  }
 
-    @Value
-    @Builder
-    static class CarCreateDto {
-        @NonNull
-        String registrationNumber;
-        String country;
-        LocalDateTime arrivalDate;
-        LocalDateTime departureDate;
-        boolean paid;
-    }
+  @Builder
+  record CarCreateDto(
+      @NonNull
+      String registrationNumber,
+      String country,
+      LocalDateTime arrivalDate,
+      LocalDateTime departureDate,
+      boolean paid) {
+  }
 
-    @Value
-    @Builder
-    static class CarDataResponseDto {
-        String accountId;
-        String carId;
-        String registrationNumber;
-        String country;
-        LocalDateTime arrivalDate;
-        LocalDateTime departureDate;
-        boolean paid;
-        boolean onParking;
-    }
+  @Builder
+  record CarDataResponseDto(
+      @NonNull
+      String accountId,
+      @NonNull
+      String carId,
+      @NonNull
+      String registrationNumber,
+      String country,
+      @NonNull
+      LocalDateTime arrivalDate,
+      LocalDateTime departureDate,
+      boolean paid,
+      boolean onParking) {
+  }
 
-    @Value
-    @Builder
-    static class CarUpdateDto {
-        String registrationNumber;
-        String country;
-        LocalDateTime arrivalDate;
-        LocalDateTime departureDate;
-        Boolean paid;
-        Boolean onParking;
-    }
+  @Builder
+  record CarUpdateDto(
+      @NonNull
+      String registrationNumber,
+      String country,
+      LocalDateTime arrivalDate,
+      LocalDateTime departureDate,
+      Boolean paid,
+      Boolean onParking) {
+  }
 }

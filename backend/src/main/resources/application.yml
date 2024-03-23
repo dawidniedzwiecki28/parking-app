@@ -3,12 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/backend
+    url: jdbc:postgresql://postgres:5432/backend
     username: developer
     password: developer
-
-  flyway:
-    out-of-order: true
 
   jpa:
     properties:
@@ -19,7 +16,7 @@ spring:
         order_inserts: true
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     show-sql: true
 parking:
   config:
