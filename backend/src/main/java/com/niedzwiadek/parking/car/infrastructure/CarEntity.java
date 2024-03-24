@@ -1,4 +1,4 @@
-package com.niedzwiadek.parking.carpark.infrastructure;
+package com.niedzwiadek.parking.car.infrastructure;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

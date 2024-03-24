@@ -1,5 +1,6 @@
 package com.niedzwiadek.parking.auth.api;
 
+import lombok.Builder;
 import lombok.NonNull;
 
 public interface AuthOperations {
@@ -7,6 +8,7 @@ public interface AuthOperations {
 
   AuthenticationResponse login(@NonNull AuthenticationRequest request);
 
+  @Builder
   record RegisterRequest(
       @NonNull String name,
       @NonNull String email,

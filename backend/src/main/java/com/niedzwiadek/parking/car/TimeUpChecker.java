@@ -1,4 +1,4 @@
-package com.niedzwiadek.parking.carpark;
+package com.niedzwiadek.parking.car;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
