@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/account")
 public class AccountController {
 
   private static final Logger log = LoggerFactory.getLogger(AccountController.class);
+  public static final String ACCOUNTS_PATH = "/account";
+  public static final String ACCOUNT_PATH = ACCOUNTS_PATH + "/{accountId}";
+
   private final AccountOperations accountOperations;
 
-  @GetMapping()
+  @GetMapping(ACCOUNTS_PATH)
   AccountDto getCurrent(final Principal principal) {
     final var email = principal.getName();
     log.info("Received request to get current user {}", email);
@@ -33,23 +34,23 @@ public class AccountController {
     return new AccountDto(accountData.accountId().serialize(), accountData.name(), email);
   }
 
-  @PutMapping("/{accountId}")
+  @PutMapping(ACCOUNT_PATH)
   void update(@PathVariable @NonNull final String accountId,
               @RequestBody @NonNull final AccountUpdateDto updateDto) {
     log.info("Received request to rename user {}", accountId);
     accountOperations.rename(AccountId.ofNullable(accountId), updateDto.name());
   }
 
-  @DeleteMapping("/{accountId}")
+  @DeleteMapping(ACCOUNT_PATH)
   void delete(@PathVariable @NonNull final String accountId) {
     log.info("Received request to delete user {}", accountId);
     accountOperations.delete(AccountId.ofNullable(accountId));
   }
 
-  record AccountUpdateDto(String name) {
+  public record AccountUpdateDto(String name) {
   }
 
-  record AccountDto(
+  public record AccountDto(
       @NonNull String id,
       String name,
       @NonNull String email) {

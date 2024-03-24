@@ -1,4 +1,4 @@
-package com.niedzwiadek.parking.carpark.api;
+package com.niedzwiadek.parking.car.api;
 
 import lombok.NonNull;
 

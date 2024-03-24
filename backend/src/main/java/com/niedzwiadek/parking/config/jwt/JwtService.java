@@ -8,13 +8,13 @@ import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
 
-@Service
+@Component
 public class JwtService implements JwtOperations {
 
   @Value("${parking.config.jwt.durationMilis}")

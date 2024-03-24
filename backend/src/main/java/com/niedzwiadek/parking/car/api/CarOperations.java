@@ -1,9 +1,8 @@
-package com.niedzwiadek.parking.carpark.api;
+package com.niedzwiadek.parking.car.api;
 
 import com.niedzwiadek.parking.account.api.AccountId;
 import lombok.Builder;
 import lombok.NonNull;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,25 +10,14 @@ import java.util.Optional;
 
 public interface CarOperations {
 
-  @Transactional
   void update(@NonNull CarUpdate update);
 
-  @Transactional
   void create(@NonNull CarCreate sourceCar);
 
-  @Transactional(readOnly = true)
   List<CarData> listCarsOnParking(@NonNull AccountId accountId, String term);
 
-  @Transactional(readOnly = true)
-  Optional<CarData> find(@NonNull String registrationNumber);
+  CarData get(@NonNull String registrationNumber);
 
-  @Transactional
-  void addToBlackList(@NonNull CarId carId);
-
-  @Transactional(readOnly = true)
-  boolean checkIfBlacklisted(@NonNull String registrationNumber);
-
-  @Transactional
   void deleteCarsFor(@NonNull AccountId accountId);
 
 

@@ -15,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +36,7 @@ public class AccountEntity implements UserDetails {
   @NonNull
   private String password;
   @NonNull
-  private Instant createdAt;
+  private LocalDateTime createdAt;
   @NonNull
   @Enumerated(EnumType.STRING)
   private Role role;

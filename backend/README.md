@@ -14,8 +14,9 @@
 1. Install Java
 2. Install Docker compose
 3. In backend directory - run: **docker-compose up postgres**
-4. In backend directory - run: **./gradlew build**
-5. In backend directory - run: **./gradlew bootRun**
+4. Set **backend/src/main/resources/application.yml - spring.datasource.url:** jdbc:postgresql://localhost:5432/backend
+5. In backend directory - run: **./gradlew build**
+6. In backend directory - run: **./gradlew bootRun**
 
 ### How to run locally (without Docker):
 1. Install Java 21
@@ -27,6 +28,10 @@
 7. Set **backend/src/main/resources/application.yml - spring.jpa.hibernate.ddl-auto: create**
 8. In backend directory - run: **./gradlew build**
 9. In backend directory - run: **./gradlew bootRun**
+
+## Tests
+To run tests you have to run postgres container (**docker-compose up postgres**)
+or run your postgres database locally and configure connection in: **backend/src/test/resources/application.yml**.
 
 ## Swagger: http://localhost:8090/swagger-ui/index.html#
 Api secured with token JWT.

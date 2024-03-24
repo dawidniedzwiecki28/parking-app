@@ -1,4 +1,4 @@
-package com.niedzwiadek.parking.carpark.infrastructure;
+package com.niedzwiadek.parking.car.infrastructure;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

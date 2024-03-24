@@ -1,13 +1,11 @@
-package com.niedzwiadek.parking.carpark.domain;
+package com.niedzwiadek.parking.car.domain;
 
 import com.niedzwiadek.parking.account.api.AccountId;
-import com.niedzwiadek.parking.carpark.api.CarId;
-import com.niedzwiadek.parking.carpark.api.CarNotFoundException;
-import com.niedzwiadek.parking.carpark.api.CarOperations;
-import com.niedzwiadek.parking.carpark.infrastructure.BlacklistCarEntity;
-import com.niedzwiadek.parking.carpark.infrastructure.BlacklistCarRepository;
-import com.niedzwiadek.parking.carpark.infrastructure.CarEntity;
-import com.niedzwiadek.parking.carpark.infrastructure.CarRepository;
+import com.niedzwiadek.parking.car.api.CarId;
+import com.niedzwiadek.parking.car.api.CarNotFoundException;
+import com.niedzwiadek.parking.car.api.CarOperations;
+import com.niedzwiadek.parking.car.infrastructure.CarEntity;
+import com.niedzwiadek.parking.car.infrastructure.CarRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -26,7 +23,6 @@ class CarOperationsImpl implements CarOperations {
 
   private static final Logger log = LoggerFactory.getLogger(CarOperationsImpl.class);
   private final CarRepository repository;
-  private final BlacklistCarRepository blackListCarRepository;
 
   @Override
   @Transactional
@@ -48,7 +44,6 @@ class CarOperationsImpl implements CarOperations {
   @Transactional
   public void create(@NonNull final CarCreate sourceCar) {
     repository.deleteByRegistrationNumberIgnoreCase(sourceCar.registrationNumber());
-    blackListCarRepository.deleteByRegistrationNumberIgnoreCase(sourceCar.registrationNumber());
     final var entity = CarEntity.builder()
         .accountId(sourceCar.accountId().value())
         .carId(UUID.randomUUID())
@@ -78,29 +73,10 @@ class CarOperationsImpl implements CarOperations {
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<CarData> find(@NonNull final String registrationNumber) {
-    final var entity = repository.findByRegistrationNumberIgnoreCase(registrationNumber);
-    return entity.map(this::fromEntity);
-  }
-
-  @Override
-  @Transactional
-  public void addToBlackList(@NonNull final CarId carId) {
-    final var carEntity = repository.findById(carId.value())
-        .orElseThrow(() -> new CarNotFoundException(carId));
-    final var now = LocalDateTime.now();
-    blackListCarRepository.saveAndFlush(BlacklistCarEntity.builder()
-        .carId(carId.value())
-        .ranAwayAt(now)
-        .registrationNumber(carEntity.getRegistrationNumber())
-        .build());
-    updateBlacklisted(carId);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean checkIfBlacklisted(@NonNull final String registrationNumber) {
-    return blackListCarRepository.findByRegistrationNumberIgnoreCase(registrationNumber).isPresent();
+  public CarData get(@NonNull final String registrationNumber) {
+    final var entity = repository.findByRegistrationNumberIgnoreCase(registrationNumber)
+        .orElseThrow(() -> new CarNotFoundException(registrationNumber));
+    return fromEntity(entity);
   }
 
   @Override
@@ -121,17 +97,5 @@ class CarOperationsImpl implements CarOperations {
         .paid(entity.isPaid())
         .onParking(entity.isOnParking())
         .build();
-  }
-
-  private void updateBlacklisted(final CarId carId) {
-    update(CarUpdate.builder()
-        .carId(carId)
-        .departureDate(Optional.of(LocalDateTime.now()))
-        .onParking(Optional.of(false))
-        .paid(Optional.of(false))
-        .registrationNumber(Optional.empty())
-        .arrivalDate(Optional.empty())
-        .country(Optional.empty())
-        .build());
   }
 }

@@ -6,7 +6,7 @@ import com.niedzwiadek.parking.account.api.AccountNotFoundException;
 import com.niedzwiadek.parking.account.api.AccountOperations;
 import com.niedzwiadek.parking.account.infrastructure.AccountEntity;
 import com.niedzwiadek.parking.account.infrastructure.AccountRepository;
-import com.niedzwiadek.parking.carpark.api.CarOperations;
+import com.niedzwiadek.parking.car.api.CarOperations;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -32,7 +32,7 @@ class AccountOperationsImpl implements AccountOperations {
                           @NonNull final String email,
                           @NonNull final String password) {
     final var account = AccountEntity.builder()
-        .createdAt(Instant.now())
+        .createdAt(LocalDateTime.now())
         .email(email)
         .name(name)
         .id(UUID.randomUUID())
